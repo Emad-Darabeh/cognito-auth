@@ -1,4 +1,10 @@
-import { Entity, PrimaryColumn, CreateDateColumn, BaseEntity, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryColumn,
+  CreateDateColumn,
+  BaseEntity,
+  Column,
+} from 'typeorm';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -7,6 +13,9 @@ export class User extends BaseEntity {
 
   @Column()
   username: string;
+
+  @Column({ default: false })
+  isVerified: boolean;
 
   @CreateDateColumn() createdAt?: Date;
   @CreateDateColumn() updatedAt?: Date;

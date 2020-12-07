@@ -41,4 +41,14 @@ export class UserService {
 
     return user;
   }
+
+  async updateUserVerificationStatus(
+    id: string,
+    isVerified: boolean,
+  ): Promise<User> {
+    const user: User = await this.getUserById(id);
+    user.isVerified = isVerified;
+    await user.save();
+    return user;
+  }
 }

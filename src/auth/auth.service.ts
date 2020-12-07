@@ -5,6 +5,7 @@ import {
   CognitoUser,
   CognitoUserPool,
   CognitoUserAttribute,
+  ICognitoUserData,
 } from 'amazon-cognito-identity-js';
 import { UserService } from 'src/user/user.service';
 
@@ -22,7 +23,11 @@ export class AuthService {
     });
   }
 
-  registerUser(registerRequest: { email: string; password: string, username: string; }) {
+  registerUser(registerRequest: {
+    email: string;
+    password: string;
+    username: string;
+  }) {
     const { email, password, username } = registerRequest;
     return new Promise((resolve, reject) => {
       return this.userPool.signUp(
@@ -42,6 +47,26 @@ export class AuthService {
           }
         },
       );
+    });
+  }
+
+  verifyUser(email: string, code: string, userSub: string) {
+    const userData: ICognitoUserData = {
+      Username: email,
+      Pool: this.userPool,
+    };
+    const user = new CognitoUser(userData);
+
+    return new Promise((resolve) => {
+      user.confirmRegistration(code, true, async (err, result) => {
+        if (err) {
+          return resolve({ statusCode: 422, response: err });
+        }
+
+        // update user verification status
+        await this.userService.updateUserVerificationStatus(userSub, true);
+        return resolve({ statusCode: 400, response: result });
+      });
     });
   }
 
